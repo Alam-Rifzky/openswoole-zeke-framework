@@ -27,6 +27,11 @@ class Swooleconf{
     	$this->poolsize = 16;
     }
 
+	public function getLoggerObject(){
+        $this->Lib('utils/Fileutil');
+        return new Fileutil();
+    }
+
     public function getDefaultSessionUsername(){
         return ($this->username==null||$this->username!='') ? $this->username : str_replace(':','_',$_SERVER['REMOTE_ADDR']);
     }
@@ -42,6 +47,11 @@ class Swooleconf{
         return new Modelutil($coreModel);
     }
 
+	public function CallServiceUtil(){
+        $this->Lib('utils/Serviceutil');
+        return new Serviceutil($this);
+    }
+
     public function getLogPaths(){
         return [
             'userLogs' => $this->homedir.'logs/userlogs/',
@@ -55,6 +65,10 @@ class Swooleconf{
 
     public function callController($controllername){
         require_once $this->homedir . "presenter/" . $controllername . ".php";
+    }
+
+	public function callService($serviceName){
+        require_once $this->homedir . "services/" . $serviceName . ".php";
     }
 
     public function Lib($file){

@@ -3,27 +3,28 @@ class Usermodel{
 	public static $instance = null;
 	private $pool;
 	private PDO $conn;
+	private $databaseDriver;
 
-	public static function UserModelInstance(PDO $connection){
-    	if(self::$instance==null){
-    		self::$instance = new Usermodel($connection);
-    	}
-    	return self::$instance;
-    }
+	// public static function UserModelInstance(PDO $connection){
+    // 	if(self::$instance==null){
+    // 		self::$instance = new Usermodel($connection);
+    // 	}
+    // 	return self::$instance;
+    // }
 
-	private function __construct(PDO $connection){
-		$this->conn = $connection;
+	public function __construct($driver){
+		$this->databaseDriver = $driver;
 	}
 
-
 	public function insertCabang($data){
-		if ($this->conn==null) {
-			$this->conn = $config->get();
+		$conn = $this->databaseDriver->getPool()->pop();
+		if ($conn==null) {
+			$this->conn = $this->databaseDriver->getPool()->pop();
 		}
 		try {
 			$query = "INSERT INTO cabang (id_cabang,id_perusahaan) 
 			VALUES (:id, :cabang)";
-			$stmt = $this->conn->prepare($query);
+			$stmt = $conn->prepare($query);
 			$stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
 			$stmt->bindParam(':cabang', $data['cabang'], PDO::PARAM_STR);
 
@@ -33,6 +34,7 @@ class Usermodel{
 	        return true;
 		} catch (Exception $e) {
 			echo $e;
+			return false;
 		}		
 
 	}

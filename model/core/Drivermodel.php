@@ -5,7 +5,7 @@ class Drivermdl implements LoggerInterface {
     private $dbhost=null;
     private $pool;
 
-    public function __construct($launcher,$size=0){ 
+    public function __construct($launcher,$size=5){ 
         $this->launcher = $launcher;
         $this->username = $this->launcher->getDefaultSessionUsername();
         

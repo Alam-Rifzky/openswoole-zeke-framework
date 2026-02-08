@@ -2,7 +2,9 @@
 class Userhandler implements LoggerInterface{
 	public static $instance = null;
 	private $launcher;
-	private $modelUtil;
+    private $svcUtil;
+    private $logger;
+    private $username;
 	public static function getInstance($launcher){
     	if(self::$instance==null){
     		self::$instance = new Userhandler($launcher);
@@ -12,8 +14,18 @@ class Userhandler implements LoggerInterface{
 
     private function __construct($launcher){
 		$this->launcher = $launcher;
-		$this->modelUtil = $launcher->CallModelUtil();
+		$this->svcUtil = $this->launcher->CallServiceUtil();;
+		$this->logger = $launcher->getLoggerObject();
+		$this->username = $launcher->getDefaultSessionUsername();
 	}
+
+    public function InsertCabang(){
+        $data = [
+            'id' => 18,
+            'cabang' => 'Some Cabang'
+        ];
+        return $this->svcUtil->CallAuthenticationService()->insertUser($data);
+    }
 
     public function DebugMessage(string $message): void{
         $this->logger->WriteLog($this->launcher->getLogPaths()['visitorLogs'], $this->username, "Userhandler - " . $message,'DEBUG');
