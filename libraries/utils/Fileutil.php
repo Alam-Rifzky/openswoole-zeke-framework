@@ -29,14 +29,8 @@ class Fileutil{
     public function CreateFile($path, $filename, $useTs=1){
         // Use coroutine-safe directory creation
         if (!$this->CheckDirectory($path)) {
-            // Use Co\System for coroutine-safe operations
-            if (class_exists('Co') && method_exists('Co\System', 'exec')) {
-                // Use system command through coroutine
-                co::exec("mkdir -p " . escapeshellarg($path));
-            } else {
-                // Fallback to regular mkdir (will be hooked by SWOOLE_HOOK_ALL)
-                mkdir($path, 0777, true);
-            }
+            // Fallback to regular mkdir (will be hooked by SWOOLE_HOOK_ALL)
+            @mkdir($path, 0777, true);
         }
         
         $ifilename = $path . '/' . $filename;
@@ -49,7 +43,7 @@ class Fileutil{
             }
             
             // Use OpenSwoole's coroutine-safe writeFile
-            $result = Co\System::writeFile($ifilename, $txt);
+            $result = \OpenSwoole\Coroutine\System::writeFile($ifilename, $txt);
             
             if ($result === false) {
                 // Log error or handle failure
@@ -65,7 +59,7 @@ class Fileutil{
 
         // Use coroutine-safe file append with FILE_APPEND flag
         // This is more efficient and handles concurrent writes better
-        $result = Co\System::writeFile($pathfilename, $mytext, FILE_APPEND);
+        $result = \OpenSwoole\Coroutine\System::writeFile($pathfilename, $mytext, FILE_APPEND);
         
         if ($result === false) {
             error_log("Failed to append to file: " . $pathfilename);
@@ -74,13 +68,13 @@ class Fileutil{
 
     public function CheckFile($path){
         // Use coroutine-safe file existence check
-        $stat = Co\System::stat($path);
+        $stat = \OpenSwoole\Coroutine\System::stat($path);
         return ($stat !== false && isset($stat['mode']));
     }
 
     public function CheckDirectory($path){
         // Use coroutine-safe directory existence check
-        $stat = Co\System::stat($path);
+        $stat = \OpenSwoole\Coroutine\System::stat($path);
         return ($stat !== false && is_dir($path));
     }
 }
