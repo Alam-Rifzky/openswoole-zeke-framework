@@ -12,15 +12,24 @@ class Usermodel{
     // 	return self::$instance;
     // }
 
+	private function DebugMessage($message){
+		$this->databaseDriver->DebugMessage( '[' . __CLASS__ . '] ' . $message);
+	}
+
+	private function InfoMessage($message){
+		$this->databaseDriver->InfoMessage( '[' . __CLASS__ . '] ' . $message);
+	}
+
+	private function ErrorMessage($message){
+		$this->databaseDriver->ErrorMessage( '[' . __CLASS__ . '] ' . $message);
+	}
+
 	public function __construct($driver){
 		$this->databaseDriver = $driver;
 	}
 
 	public function insertCabang($data){
 		$conn = $this->databaseDriver->getPool()->pop();
-		if ($conn==null) {
-			$this->conn = $this->databaseDriver->getPool()->pop();
-		}
 		try {
 			$query = "INSERT INTO cabang (id_cabang,id_perusahaan) 
 			VALUES (:id, :cabang)";
@@ -28,12 +37,17 @@ class Usermodel{
 			$stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
 			$stmt->bindParam(':cabang', $data['cabang'], PDO::PARAM_STR);
 
+			$this->DebugMessage('executing query: ' . $query);
 			if (!$stmt->execute()) {
+				$this->ErrorMessage('Failed to create user');
 	            throw new RuntimeException('Failed to create user');
-	        }	
+	        }
+			
+			$this->DebugMessage('Return connection to the pool');
+			$this->databaseDriver->getPool()->push($conn);
 	        return true;
 		} catch (Exception $e) {
-			echo $e;
+			$this->ErrorMessage($e->getMessage());
 			return false;
 		}		
 
@@ -42,6 +56,7 @@ class Usermodel{
 	public function insertUser($data){
 
 		try {
+			$conn = $this->databaseDriver->getPool()->pop();
 			$query = "INSERT INTO users (username,password,nama,email,lahir,telepon,status,tipe,team) 
 			VALUES (:username, :password, :nama, :email, :dob, :phone, :status, :type, :team)";
 			$stmt = $conn->prepare($query);
@@ -56,13 +71,17 @@ class Usermodel{
 			$stmt->bindParam(':team', $data->team, PDO::PARAM_STR);
 
 			if (!$stmt->execute()) {
+				$this->ErrorMessage('Failed to create user');
 	            throw new RuntimeException('Failed to create user');
 	        }	
 	        return true;
+		} catch (Exception $e) {
+			$this->ErrorMessage($e->getMessage());
+			return false;
 		} finally {
-			$this->pool->put($conn);
+			$this->DebugMessage('Return connection to the pool');
+			$this->databaseDriver->getPool()->push($conn);
 		}
-		
 
 	}
 }

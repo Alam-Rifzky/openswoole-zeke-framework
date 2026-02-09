@@ -33,7 +33,7 @@ class Swooleconf{
     }
 
     public function getDefaultSessionUsername(){
-        return ($this->username==null||$this->username!='') ? $this->username : str_replace(':','_',$_SERVER['REMOTE_ADDR']);
+        return ($this->username!=null&&$this->username!='') ? $this->username : str_replace(':','_',$_SERVER['REMOTE_ADDR']);
     }
 
     public function setUsername($value){
