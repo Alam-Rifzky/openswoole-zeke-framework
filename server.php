@@ -25,6 +25,7 @@ $server->on("request", function($request, $response) use ($server){
         $server->shutdown();
     }elseif ($request->server['request_uri'] == '/user-input') {
         $launcher->callController("Userhandler");
+        $launcher->setUsername('user_input');
         $presenter = Userhandler::getInstance($launcher);
 
         $presenter->InsertCabang();
