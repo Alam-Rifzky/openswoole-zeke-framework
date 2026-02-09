@@ -1,9 +1,5 @@
 <?php 
 require 'config/Swooleconf.php';
-// require __DIR__ . '/model/Connpool.php';
-// require __DIR__ . '/model/Usermodel.php';
-// require __DIR__ . '/presenter/Userhandler.php';
-// require __DIR__ . '/view/Userview.php';
 
 \OpenSwoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
@@ -28,7 +24,7 @@ $server->on("request", function($request, $response) use ($server){
         $launcher->setUsername('user_input');
         $presenter = Userhandler::getInstance($launcher);
 
-        $presenter->InsertCabang();
+        $presenter->InsertCabang($request);
         // $conn = $pool->get();
         // $db = Usermodel::UserModelInstance($conn);
         

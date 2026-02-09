@@ -19,11 +19,16 @@ class Userhandler implements LoggerInterface{
 		$this->username = $launcher->getDefaultSessionUsername();
 	}
 
-    public function InsertCabang(){
-        $data = [
-            'id' => 18,
-            'cabang' => 'Some Cabang'
-        ];
+    public function InsertCabang($request){
+        if ($request->server['request_method'] === 'POST') {
+            $raw = $request->rawContent();
+            $data = json_decode($raw,true);
+        }
+
+        // $data = [
+        //     'id' => 18,
+        //     'cabang' => 'Some Cabang'
+        // ];
         return $this->svcUtil->CallAuthenticationService()->insertUser($data);
     }
 
